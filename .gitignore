@@ -1,0 +1,12 @@
+# Ignore the key files
+github_deploy_key
+github_deploy_key.pub
+
+# Ignore python cache
+__pycache__/
+*.pyc
+
+# Ignore the massive data file (too big for GitHub)
+large_dataset.csv
+large_dataset.encrypted
+large_dataset_restored.csv
