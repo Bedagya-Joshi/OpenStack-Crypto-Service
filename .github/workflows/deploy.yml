@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted # <--- THIS IS THE MAGIC CHANGE
 
     steps:
     # Step 1: Check out your code from the repository
@@ -40,5 +40,6 @@ jobs:
     - name: Install Requirements on VM
       run: |
         echo "Installing dependencies on remote server..."
-        ssh ubuntu@${{ secrets.VM_IP }} "pip install -r requirements.txt"
+        ssh ubuntu@${{ secrets.VM_IP }} "sudo apt update && sudo apt install python3-pip -y"
+        ssh ubuntu@${{ secrets.VM_IP }} "pip3 install -r requirements.txt"
         echo "Dependencies installed."
