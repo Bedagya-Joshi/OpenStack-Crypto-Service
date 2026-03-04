@@ -22,10 +22,13 @@ jobs:
         known_hosts: unnecessary # We will handle known_hosts in the next step
         if_key_exists: replace
 
-    # Step 3: Add the OpenStack Server to known hosts (prevents "Are you sure?" prompt)
-    - name: Add Known Hosts
+    - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
+        cat << 'EOF' > ~/.ssh/id_rsa
+        ${{ secrets.SSH_PRIVATE_KEY }}
+        EOF
+        chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.VM_IP }} >> ~/.ssh/known_hosts
 
     # Step 4: Copy your Python files to the Server
