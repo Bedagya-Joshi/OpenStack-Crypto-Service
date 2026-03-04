@@ -13,30 +13,29 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-# Step 2: Configure the SSH Key
+    # Step 2: Configure the SSH Key
     - name: Setup SSH Key
       run: |
-        sudo chown -R $USER:$USER ~/.ssh || true
         mkdir -p ~/.ssh
-        rm -f ~/.ssh/known_hosts  # <--- THIS CLEARS THE OLD FINGERPRINT
+        rm -f ~/.ssh/known_hosts
         # This writes the key, strips invisible Windows characters, and ensures a clean new line
         cat << 'EOF' | tr -d '\r' > ~/.ssh/id_rsa
         ${{ secrets.SSH_PRIVATE_KEY }}
         EOF
         echo "" >> ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        
+
     # Step 3: Copy your Python files to the Server
     - name: Copy Files to OpenStack VM
       run: |
         echo "Uploading files to ${{ secrets.VM_IP }}..."
-        scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa generate_data.py secure_processor.py requirements.txt ubuntu@${{ secrets.VM_IP }}:/home/ubuntu/
+        scp -o StrictHostKeyChecking=no -o PubkeyAcceptedKeyTypes=+ssh-rsa -i ~/.ssh/id_rsa generate_data.py secure_processor.py requirements.txt ubuntu@${{ secrets.VM_IP }}:/home/ubuntu/
         echo "Files uploaded successfully."
 
     # Step 4: Install the libraries on the Server
     - name: Install Requirements on VM
       run: |
         echo "Installing dependencies on remote server..."
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.VM_IP }} "sudo apt update && sudo apt install python3-pip -y"
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.VM_IP }} "pip3 install -r requirements.txt"
+        ssh -o StrictHostKeyChecking=no -o PubkeyAcceptedKeyTypes=+ssh-rsa -i ~/.ssh/id_rsa ubuntu@${{ secrets.VM_IP }} "sudo apt update && sudo apt install python3-pip -y"
+        ssh -o StrictHostKeyChecking=no -o PubkeyAcceptedKeyTypes=+ssh-rsa -i ~/.ssh/id_rsa ubuntu@${{ secrets.VM_IP }} "pip3 install -r requirements.txt"
         echo "Dependencies installed."
