@@ -10,3 +10,7 @@ __pycache__/
 large_dataset.csv
 large_dataset.encrypted
 large_dataset_restored.csv
+
+*.pem
+*key*
+__pycache__/
