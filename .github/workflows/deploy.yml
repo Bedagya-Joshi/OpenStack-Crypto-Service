@@ -13,17 +13,19 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
- # Step 2: Configure the SSH Key
+# Step 2: Configure the SSH Key
     - name: Setup SSH Key
       run: |
         sudo chown -R $USER:$USER ~/.ssh || true
         mkdir -p ~/.ssh
+        rm -f ~/.ssh/known_hosts  # <--- THIS CLEARS THE OLD FINGERPRINT
         # This writes the key, strips invisible Windows characters, and ensures a clean new line
         cat << 'EOF' | tr -d '\r' > ~/.ssh/id_rsa
         ${{ secrets.SSH_PRIVATE_KEY }}
         EOF
         echo "" >> ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
+        
     # Step 3: Copy your Python files to the Server
     - name: Copy Files to OpenStack VM
       run: |
