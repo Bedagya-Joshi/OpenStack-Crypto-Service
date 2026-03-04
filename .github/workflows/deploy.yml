@@ -24,7 +24,9 @@ jobs:
 
     # Step 3: Add the OpenStack Server to known hosts (prevents "Are you sure?" prompt)
     - name: Add Known Hosts
-      run: ssh-keyscan -H ${{ secrets.VM_IP }} >> ~/.ssh/known_hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.VM_IP }} >> ~/.ssh/known_hosts
 
     # Step 4: Copy your Python files to the Server
     - name: Copy Files to OpenStack VM
