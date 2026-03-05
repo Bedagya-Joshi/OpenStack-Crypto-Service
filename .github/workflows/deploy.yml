@@ -12,16 +12,33 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # Step 1: Copy your code files
-    - name: Copy Files to OpenStack VM
+    # Step 1: Download missing dependencies on the HOST (Warehouse)
+    - name: Prepare Offline Warehouse
       run: |
-        echo "Uploading files to ${{ secrets.VM_IP }}..."
-        scp -o StrictHostKeyChecking=no -i ~/.ssh/pipeline_rsa generate_data.py secure_processor.py requirements.txt ubuntu@${{ secrets.VM_IP }}:/home/ubuntu/
-        echo "Files uploaded successfully."
+        echo "Updating local warehouse..."
+        mkdir -p ./offline_wheels
+        # This downloads everything needed for Python 3.10 into the folder
+        pip3 download -d ./offline_wheels --python-version 3.10 --only-binary=:all: -r requirements.txt
+        echo "Warehouse updated."
 
-    # Step 2: Verify the environment (No internet required)
-    - name: Verify Environment
+    # Step 2: Sync the warehouse to the VM
+    - name: Sync Warehouse to VM
       run: |
-        echo "Verifying environment on remote server..."
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/pipeline_rsa ubuntu@${{ secrets.VM_IP }} "python3 -c 'import pandas; import numpy; print(\"Pandas/Numpy check: PASSED\")'"
-        echo "Environment verification complete."
+        echo "Syncing offline wheels to VM..."
+        # Create folder if it doesn't exist, then rsync (faster than scp)
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/pipeline_rsa ubuntu@${{ secrets.VM_IP }} "mkdir -p /home/ubuntu/offline_wheels"
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/pipeline_rsa" ./offline_wheels/ ubuntu@${{ secrets.VM_IP }}:/home/ubuntu/offline_wheels/
+        echo "Sync complete."
+
+    # Step 3: Install on VM using the local warehouse (No internet required)
+    - name: Install Dependencies Offline
+      run: |
+        echo "Installing dependencies..."
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/pipeline_rsa ubuntu@${{ secrets.VM_IP }} "python3 -m pip install --no-index --find-links=/home/ubuntu/offline_wheels -r /home/ubuntu/requirements.txt"
+
+    # Step 4: Copy your actual code
+    - name: Copy Code to VM
+      run: |
+        echo "Uploading code..."
+        scp -o StrictHostKeyChecking=no -i ~/.ssh/pipeline_rsa generate_data.py secure_processor.py requirements.txt ubuntu@${{ secrets.VM_IP }}:/home/ubuntu/
+        echo "Code deployed."
