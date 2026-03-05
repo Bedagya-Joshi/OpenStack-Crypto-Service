@@ -1,16 +1,13 @@
-# Ignore the key files
-github_deploy_key
-github_deploy_key.pub
+.env
+*.key
+*.pem
+github_deploy_key*
 
-# Ignore python cache
+*.csv
+*.log
+
 __pycache__/
 *.pyc
-
-# Ignore the massive data file (too big for GitHub)
-large_dataset.csv
-large_dataset.encrypted
-large_dataset_restored.csv
-
-*.pem
-*key*
-__pycache__/
+venv/
+.venv/
+.pytest_cache/

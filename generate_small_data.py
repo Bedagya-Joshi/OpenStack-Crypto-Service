@@ -3,8 +3,8 @@ import random
 import string
 import os
 
-FILENAME = "large_dataset.csv"
-TARGET_SIZE_MB = 100  
+TARGET_SIZE_MB = 5  
+FILENAME = "small_dataset.csv"
 
 FIRST_NAMES = ["James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda", "David", "Elizabeth"]
 LAST_NAMES = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez"]
@@ -17,10 +17,7 @@ NOTE_TEMPLATES = [
     "Online shopping transaction"
 ]
 
-def generate_random_string(length=10):
-    return ''.join(random.choices(string.ascii_letters, k=length))
-
-def create_dummy_csv():
+def create_small_csv():
     print(f"Generating {TARGET_SIZE_MB}MB realistic dataset...")
     
     with open(FILENAME, 'w', newline='') as csvfile:
@@ -40,11 +37,7 @@ def create_dummy_csv():
             })
             row_id += 1
             
-            if row_id % 10000 == 0:
-                current_size = os.path.getsize(FILENAME) / (1024 * 1024)
-                print(f"Rows: {row_id}, Size: {current_size:.2f} MB")
-
     print(f"Done! Created '{FILENAME}'")
 
 if __name__ == "__main__":
-    create_dummy_csv()
+    create_small_csv()
