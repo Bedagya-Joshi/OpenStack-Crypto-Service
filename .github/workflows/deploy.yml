@@ -40,5 +40,5 @@ jobs:
     - name: Copy Code to VM
       run: |
         echo "Uploading code..."
-        scp -o StrictHostKeyChecking=no -i ~/.ssh/pipeline_rsa generate_data.py secure_processor.py requirements.txt ubuntu@${{ secrets.VM_IP }}:/home/ubuntu/
+        scp -o StrictHostKeyChecking=no -i ~/.ssh/pipeline_rsa generate_data.py generate_small_data.py secure_processor.py requirements.txt ubuntu@${{ secrets.VM_IP }}:/home/ubuntu/
         echo "Code deployed."
