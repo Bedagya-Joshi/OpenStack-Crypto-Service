@@ -46,4 +46,5 @@ To evaluate the impact of infrastructure hardening on data processing performanc
 2. **Data Preparation:** Generate synthetic datasets using `generate_small_data.py` or `generate_large_data.py`.
 3. **Execution:** Initiate the processing job:
    ```bash
-   python secure_processor.py
+   python secure_processor.py 
+4. **Done**
