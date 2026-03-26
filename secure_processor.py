@@ -17,7 +17,7 @@ logging.basicConfig(
 )
 
 KEY_FILENAME = "encryption.key"
-PII_COLUMNS = ['full_name', 'account_number', 'credit_card']
+PII_COLUMNS = ['full_name', 'account_number']
 
 def get_or_create_key():
     if os.path.exists(KEY_FILENAME):
